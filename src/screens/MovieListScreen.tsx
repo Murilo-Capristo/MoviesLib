@@ -1,3 +1,7 @@
+import "../i18n";
+
+import {useTranslation} from 'react-i18next';
+
 import { View, StyleSheet, Text, FlatList, TouchableOpacity, ActivityIndicator, RefreshControl, Alert, Pressable } from "react-native"
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { SwipeListView } from "react-native-swipe-list-view";
@@ -69,6 +73,8 @@ const MovieListScreen = () => {
         </View>
     )
 
+      const { t } = useTranslation();
+    
     const deleteRow = async (movieID) => {
         try {
             await deleteMovie(movieID)

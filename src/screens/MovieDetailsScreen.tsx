@@ -1,15 +1,22 @@
-import { View, StyleSheet, Text, Image, ScrollView, Alert } from "react-native"
+import "../i18n";
+
+import LottieView from "lottie-react-native";
+
+import {useTranslation} from 'react-i18next';
+
+import { View, StyleSheet, Text, Image, ScrollView, Alert, Touchable, TouchableOpacity } from "react-native"
 import AntDesign from '@expo/vector-icons/AntDesign'
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context"    
 import PlayButton from "../components/PlayButton"
 
-import { useRoute } from "@react-navigation/native"
+import { useFocusEffect, useRoute } from "@react-navigation/native"
 import { LinearGradient } from "expo-linear-gradient"
 
 import { getTrailerUrl } from '../services/movieService'
 import { Video, ResizeMode } from 'expo-av'
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import AsyncStorage from "@react-native-async-storage/async-storage"
+import { t } from "i18next";
 
 const MovieDetailsScreen = () => {
 
@@ -29,6 +36,8 @@ const MovieDetailsScreen = () => {
         }
     }
 
+    const heart = useRef<LottieView>(null)
+
     // Função que carrega dados do AsyncStorage
     const loadData = async () => {
         try {
@@ -44,6 +53,15 @@ const MovieDetailsScreen = () => {
     useEffect(() => {
         loadData()
     }, [])
+
+    useFocusEffect(
+        useCallback(() => {
+            heart.current?.reset()
+
+        }, [])
+    )
+
+    const { t } = useTranslation();
 
     return(
         <SafeAreaProvider>
@@ -82,12 +100,24 @@ const MovieDetailsScreen = () => {
 
                     {/* Nota */}
                     <View style={{ flexDirection: 'row', marginBottom: 12 }}>
-                        <AntDesign name="star" size={20} color='#f7cb46' />
-                        <Text 
-                            style={[styles.text, { marginBottom: 12 }]}
-                        >
-                            { movie.rating }/10
-                        </Text>
+                        <View style={{ position: "absolute"}}>
+                            <TouchableOpacity onPress={() => heart.current?.play()}>
+                                <LottieView 
+                                    ref={heart}
+                                    source={require('../animations/Active heart.json')}
+                                    autoPlay={false}
+                                    loop={false}
+                                    style={styles.heart}
+                                    />    
+
+                            </TouchableOpacity>
+                        </View>
+                            <AntDesign name="star" size={20} color='#f7cb46' />
+                            <Text 
+                                style={[styles.text, { marginBottom: 12 }]}
+                            >
+                                { movie.rating }/10
+                            </Text>
                     </View>
 
                     {/* Categorias */}
@@ -107,7 +137,7 @@ const MovieDetailsScreen = () => {
                                 fontSize: 18, 
                                 fontWeight: '600'}]}
                         >
-                            Sinopse
+                            {t("synopsis")}
                         </Text>
                         <Text style={[styles.text, { marginBottom: 24 }]}>
                             {movie.synopsis}
@@ -150,5 +180,9 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         bottom: 0
+    },
+    heart:{
+        width: 80,
+        height: 80
     }
 })

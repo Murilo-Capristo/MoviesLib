@@ -1,3 +1,7 @@
+import "../i18n";
+
+import {useTranslation} from 'react-i18next';
+
 import { View, StyleSheet, Text, TextInput, Switch } from "react-native"
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context"
 import { useState, useEffect, useContext} from "react"
@@ -16,6 +20,7 @@ const SettingsScreen = () => {
     if (!setValue) {
         throw new Error("AppContext não encontrado. Verifique se AppProvider envolve suas telas")
     }
+  const { t } = useTranslation();
 
     const loadData = async () => {
         try {
